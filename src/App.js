@@ -58,8 +58,30 @@ function App() {
     setArr([...temp]);
   };
 
-  const handleDelete = (index) => {
+  const handleDeleteSection = (index) => {
     setArr(arr.filter((obj,i) => index !== i))
+  }
+
+  const handleDeleteLabel = (sectionIndex,labelIndex) => {
+    const newData = [...arr];
+    const section = newData[sectionIndex];
+    
+    if (section && section.section && section.section.label) {
+        section.section.label.splice(labelIndex, 1);
+    }
+
+    setArr(newData);
+  }
+
+  const handleDeleteQuestion = (sectionIndex,labelIndex, questionIndex) => {
+    const newData = [...arr];
+    const section = newData[sectionIndex];
+
+    if (section && section.section && section.section.label && section.section.label[labelIndex] && section.section.label[labelIndex].question) {
+        section.section.label[labelIndex].question.splice(questionIndex, 1);
+    }
+
+    setArr(newData);
   }
 
   useEffect(() => {
@@ -76,11 +98,11 @@ function App() {
                 <div>
                   <FormControlLabel
                     value={index}
-                    label={`${index + 1}. ${sectionObj.section.name}`}
+                    label={`${index + 1}. ${sectionObj.section?.name}`}
                     onChange={(e) => setSelected(e.target.value)}
                     control={<Radio />}
                   />
-                  <Button variant="text" color="error" onClick={()=>handleDelete(index)}>
+                  <Button variant="text" color="error" onClick={()=>handleDeleteSection(index)}>
                     delete
                   </Button>
                 </div>
@@ -95,17 +117,26 @@ function App() {
                           onChange={(e) => setLabelSelected(e.target.value)}
                           control={<Radio />}
                         />
+                        <Button variant="text" color="error" onClick={()=>handleDeleteLabel(index, eleIndex)}>
+                    delete
+                  </Button>
                       </div>
 
                       {ele?.question?.length > 0 &&
                         ele.question.map((eleq, eleqIndex) => (
-                          <div>{`${eleqIndex + 1}. ${eleq?.name}`}</div>
+                          <><div>{`${eleqIndex + 1}. ${eleq?.name}`}
+                            <Button variant="text" color="error" onClick={() => handleDeleteQuestion(index, eleIndex, eleqIndex)}>
+                              delete
+                            </Button>
+                          </div></>
+                          
                         ))}
+                        <div>
+                              {sectionObj.section.label?.[labelSelected]?.or ? "or" : ""}
+                            </div>
                     </>
                   ))}
-                <div>
-                  {sectionObj.section.label?.[labelSelected]?.or ? "or" : ""}
-                </div>
+                
               </>
             );
           })}
